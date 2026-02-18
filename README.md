@@ -22,6 +22,26 @@
 C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoExit -Command "& 'C:\Apps\midnight\core\sing-box.exe' run -c 'C:\Apps\midnight\core\config.json'"
 ```
 
+## Автозапуск:
+
+```powershell
+# Укажите путь к программе
+$ProgramPath = "C:\Program Files\midnight vpn\midnight.exe" 
+
+$CurrentUser = "$env:USERDOMAIN\$env:USERNAME"
+
+$Action = New-ScheduledTaskAction -Execute $ProgramPath
+
+$Trigger = New-ScheduledTaskTrigger -AtLogOn
+
+$Settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable
+
+# Используем текущего пользователя с правами администратора
+$Principal = New-ScheduledTaskPrincipal -UserId $CurrentUser -LogonType Interactive -RunLevel Highest
+
+Register-ScheduledTask -TaskName "Midnight VPN" -Action $Action -Trigger $Trigger -Settings $Settings -Principal $Principal -Force
+```
+
 ## Компиляция:
 Если по каким-либо причинам придётся изменить исходный код приложения, то можно пересобрать `midnight.exe`: 
 ### 1. Заходим в core папку
@@ -34,4 +54,5 @@ C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoExit -Command "& 'C
 `C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe /t:winexe /out:midnight.exe /win32icon:icons\gear.ico scripts\midnight.cs`
 
 ## Приятного пользования!
+
 
